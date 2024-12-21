@@ -165,8 +165,13 @@ def _(np, testset):
     def save_data():
         delta = 10
         num = 16
+        tests = []
         for i in range(delta, delta+num):
-            np.savetxt(f"data{i}.txt", testset.data[i].numpy())
+            pic = testset.data[i].numpy()
+            pic = pic.flatten()
+            tests.append(pic)
+        arr = np.array(tests).transpose()
+        np.savetxt(f"data.txt", arr)
         labels = np.array([testset.targets[i] for i in range(delta, delta+num)])
         np.savetxt(f"labels.txt", labels, fmt="%.0f")
     return (save_data,)
