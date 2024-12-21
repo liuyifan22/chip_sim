@@ -5,9 +5,6 @@
 
 #include "../core/core.h"
 #include "../prims/primitive.h"
-#include "../prims/prim_load.h"
-#include "../prims/prim_store.h"
-#include "../prims/prim_jump.h"
 #include "../prims/prim_relu.h"
 #include "../prims/prim_mm.h"
 
@@ -35,6 +32,7 @@ public:
 		SC_THREAD(test_cores);
 	}
 	void load_matrix(const std::string& file_path, uint64_t base_addr, uint64_t height, uint64_t width);
+	void load_vector(const std::string& file_path, uint64_t base_addr, uint64_t height, uint64_t width);
 	void print_matrix(uint64_t base_addr, uint64_t height, uint64_t width);
 	void read_and_print_output_matrix(uint64_t base_addr, uint64_t height, uint64_t width);
 	void data_gen();
@@ -58,55 +56,17 @@ public:
 	string test_name_;
 };
 
-uint64_t left_input_addr = 0x10;
-uint64_t lmost_input_addr = 0x0501;
-uint64_t right_input_addr = 0x1001;
-uint64_t lmost_bias_addr = 0x1401;
-uint64_t soft_output_addr = 0x1A01;
-uint64_t bias_addr = 0x2001;
-uint64_t mid_output_addr = 0x2501;
-uint64_t output_addr = 0x3001;
+const uint64_t input_addr = 0x0001; // input 16(2)*784
+const uint64_t fc1w_addr 	= 0x0620; // fc1.w 784(98)*128
+const uint64_t fc1b_addr 	= 0x3720; // fc1.b 16(2)*128
+const uint64_t fc2w_addr 	= 0x3820; // fc2.w 128(8)*16
+const uint64_t fc2b_addr 	= 0x3920; // fc2.b 16*16
 
-uint64_t lmost_height = 16;
-uint64_t left_height=8;
-uint64_t left_width= 16;
-uint64_t right_width =16;
-
-
-
-//void core_tb::load_matrix(const std::string& file_path, uint64_t base_addr) {
-//	std::ifstream file(file_path);
-//	if (!file.is_open()) {
-//		std::cerr << "Failed to open file: " << file_path << std::endl;
-//		return;
-//	}
-//
-//	std::string line;
-//	std::vector<sc_bv<MEM_PORT_WIDTH>> matrix_data;
-//	while (std::getline(file, line)) {
-//		std::istringstream iss(line);
-//		std::vector<BFloat16> row;
-//		float value;
-//		while (iss >> value) {
-//			row.push_back(BFloat16(value));
-//		}
-//
-//		
-//		for (size_t i = 0; i < row.size()/8; ++i) {
-//			sc_bv<MEM_PORT_WIDTH> temp;
-//			for (size_t j = 0; j < 8; ++j) {
-//				temp.range((16 * (j + 1) - 1), 16 * j) = to_bits(row[i*8+j]);
-//			}
-//			matrix_data.push_back(temp);
-//		}
-//	}
-//
-//	file.close();
-//
-//	// Push matrix data to data_list
-//	data_list[base_addr] = matrix_data;
-//	std::cout << "Matrix loaded at address: " << base_addr << std::endl;
-//}
+const uint64_t batch_size = 16;
+const uint64_t layer_one = 784;
+const uint64_t layer_two = 128;
+const uint64_t output_unpadded = 10;
+const uint64_t output_padded = 16;
 
 void core_tb::load_matrix(const std::string& file_path, uint64_t base_addr, uint64_t height, uint64_t width) {
 	std::ifstream file(file_path);
@@ -119,7 +79,6 @@ void core_tb::load_matrix(const std::string& file_path, uint64_t base_addr, uint
 	std::vector<sc_bv<MEM_PORT_WIDTH>> matrix_data;
 	std::vector<std::vector<BFloat16>> matrix;
 
-	// ��ȡ�ļ�������Ϊ����
 	while (std::getline(file, line)) {
 		std::istringstream iss(line);
 		std::vector<BFloat16> row;
@@ -132,11 +91,9 @@ void core_tb::load_matrix(const std::string& file_path, uint64_t base_addr, uint
 
 	file.close();
 
-	// ���㲹���ľ���ߴ�
 	uint64_t padded_height = ((height + 7) / 8) * 8;
 	uint64_t padded_width = ((width + 7) / 8) * 8;
 
-	// ���㲢ת��Ϊ sc_bv<MEM_PORT_WIDTH> ��ʽ
 	for (uint64_t i = 0; i < padded_height; ++i) {
 		for (uint64_t j = 0; j < padded_width; j += 8) {
 			sc_bv<MEM_PORT_WIDTH> temp;
@@ -152,38 +109,54 @@ void core_tb::load_matrix(const std::string& file_path, uint64_t base_addr, uint
 		}
 	}
 
-	// �������������͵� data_list
 	data_list[base_addr] = matrix_data;
 	std::cout << "Matrix loaded at address: " << base_addr << std::endl;
 }
 
+void core_tb::load_vector(const std::string& file_path, uint64_t base_addr, uint64_t height, uint64_t width) {
+	std::ifstream file(file_path);
+	if (!file.is_open()) {
+		std::cerr << "Failed to open file: " << file_path << std::endl;
+		return;
+	}
 
+	std::string line;
+	std::vector<sc_bv<MEM_PORT_WIDTH>> matrix_data;
+	std::vector<std::vector<BFloat16>> matrix;
 
-//void core_tb::print_matrix(uint64_t base_addr, uint64_t height, uint64_t width) {
-//	auto it = data_list.find(base_addr);
-//	if (it == data_list.end()) {
-//		std::cerr << "Matrix not found at address: " << base_addr << std::endl;
-//		return;
-//	}
-//
-//	const auto& matrix_data = it->second;
-//	for (uint64_t i = 0; i < height; ++i) {
-//		for (uint64_t j = 0; j < width; ++j) {
-//			uint64_t index = i * width + j;
-//			uint64_t data_index = index / (MEM_PORT_WIDTH / 16);
-//			uint64_t element_index = index % (MEM_PORT_WIDTH / 16);
-//			if (data_index < matrix_data.size()) {
-//				sc_bv<16> element_data = matrix_data[data_index].range(16 * (element_index + 1) - 1, 16 * element_index);
-//				BFloat16 value(element_data);
-//				std::cout << value << " ";
-//			}
-//			else {
-//				std::cout << "0 ";
-//			}
-//		}
-//		std::cout << std::endl;
-//	}
-//}
+	while (std::getline(file, line)) {
+		std::istringstream iss(line);
+		std::vector<BFloat16> row;
+		float value;
+		while (iss >> value) {
+			row.push_back(BFloat16(value));
+		}
+		matrix.push_back(row);
+	}
+
+	file.close();
+
+	uint64_t padded_height = ((height + 7) / 8) * 8;
+	uint64_t padded_width = ((width + 7) / 8) * 8;
+
+	for (uint64_t i = 0; i < padded_height; ++i) {
+		for (uint64_t j = 0; j < padded_width; j += 8) {
+			sc_bv<MEM_PORT_WIDTH> temp;
+			for (uint64_t k = 0; k < 8; ++k) {
+				if (i < height && j + k < width && i < matrix.size() && j + k < matrix[i].size()) {
+					temp.range((16 * (k + 1) - 1), 16 * k) = to_bits(matrix[0][j + k]); // only one row, repeated
+				}
+				else {
+					temp.range((16 * (k + 1) - 1), 16 * k) = to_bits(BFloat16(0));
+				}
+			}
+			matrix_data.push_back(temp);
+		}
+	}
+
+	data_list[base_addr] = matrix_data;
+	std::cout << "Matrix loaded at address: " << base_addr << std::endl;
+}
 
 void core_tb::print_matrix(uint64_t base_addr, uint64_t height, uint64_t width) {
 	auto it = data_list.find(base_addr);
@@ -219,31 +192,6 @@ void core_tb::read_and_print_output_matrix(uint64_t base_addr, uint64_t height, 
 	std::vector<sc_bv<MEM_PORT_WIDTH>> matrix_data;
 	sc_bv<MEM_PORT_WIDTH> temp;
 
-	// ��ȡ�����������
-	/*for (uint64_t i = 0; i < height; ++i) {
-		for (uint64_t j = 0; j < width; j += MEM_PORT_WIDTH / 16) {
-			this->test_core->core_memory->read(base_addr + (i * width + j) * 2, temp);
-			matrix_data.push_back(temp);
-		}
-	}*/
-
-	// ��ӡ�������
-	/*for (uint64_t i = 0; i < height; ++i) {
-		for (uint64_t j = 0; j < width; ++j) {
-			uint64_t index = i * width + j;
-			uint64_t data_index = index / (MEM_PORT_WIDTH / 16);
-			uint64_t element_index = index % (MEM_PORT_WIDTH / 16);
-			if (data_index < matrix_data.size()) {
-				sc_bv<16> element_data = matrix_data[data_index].range(16 * (element_index + 1) - 1, 16 * element_index);
-				BFloat16 value(element_data);
-				std::cout << value << " ";
-			}
-			else {
-				std::cout << "0 ";
-			}
-		}
-		std::cout << std::endl;
-	}*/
 	uint64_t padded_height = (height + 7) / 8 * 8;
 	uint64_t padded_width = (width + 7) / 8 * 8;
 	for (auto i = 0; i < padded_height*padded_width/8; i++) {
@@ -284,24 +232,16 @@ void core_tb::read_and_print_output_matrix(uint64_t base_addr, uint64_t height, 
 void core_tb::data_gen()
 {
 	// prepare prims
-	assert(left_input_addr + left_height*left_width < right_input_addr);
-	assert(right_input_addr + left_width*right_width < bias_addr);
-	assert(bias_addr + left_height * right_width < output_addr);
 	using namespace prims;
-	
-	uint64_t padded_left_height = ((left_height + 7) / 8) * 8;
-	uint64_t padded_left_width = ((left_width + 7) / 8) * 8;
-	uint64_t padded_right_width = ((right_width + 7) / 8) * 8;
-	uint64_t padded_lmost_height = ((lmost_height + 7) / 8) * 8;
 
 	instructions.push_back(convertPrim2Code(
-		PrimMM(left_input_addr,padded_left_height,padded_left_width,right_input_addr,padded_right_width,bias_addr,mid_output_addr)
+		PrimMM(input_addr, layer_one, batch_size, fc1w_addr, layer_two, fc1b_addr, fc1b_addr)
 	));
 	instructions.push_back(convertPrim2Code(
-		PrimRelu(mid_output_addr, left_height, right_width, soft_output_addr)
+		PrimRelu(fc1b_addr, batch_size*layer_two/8, 0, fc1b_addr, 1)
 	));
 	instructions.push_back(convertPrim2Code(
-		PrimMM(lmost_input_addr, padded_lmost_height, padded_left_height, soft_output_addr, padded_right_width, lmost_bias_addr, output_addr)
+		PrimMM(fc1b_addr, layer_two, batch_size, fc2w_addr, output_padded, fc2b_addr, fc2b_addr)
 	));
 
 	// prepare data
@@ -310,28 +250,26 @@ void core_tb::data_gen()
 
 	cout << "--------------------- original data ---------------------" << endl;
 	// Load matrix A from file and push to data_list
-	load_matrix("E:/chip_simulator/matrices_transformer/matrix_A.txt", left_input_addr, left_height, left_width);
-	load_matrix("E:/chip_simulator/matrices_transformer/matrix_B.txt", right_input_addr, left_width, right_width);
-	load_matrix("E:/chip_simulator/matrices_transformer/matrix_C.txt", bias_addr, left_height, right_width);
+	load_matrix("./notebooks/data.txt", input_addr, layer_one, batch_size);
+	load_matrix("./notebooks/fc1w.txt", fc1w_addr, layer_two, layer_one);
+	load_vector("./notebooks/fc1b.txt", fc1b_addr, layer_two, batch_size);
+	load_matrix("./notebooks/fc2w.txt", fc2w_addr, output_unpadded, layer_two);
+	load_vector("./notebooks/fc2b.txt", fc2b_addr, output_unpadded, batch_size);
 
-	std::cout << "Matrix weight 1:" << std::endl;
-	print_matrix(left_input_addr, left_height, left_width);
+	std::cout << "input data" << std::endl;
+	print_matrix(input_addr, layer_one, batch_size);
 	std::cout << std::endl;
-	std::cout << "Matrix input:" << std::endl;
-	print_matrix(right_input_addr, left_width, right_width);
+	std::cout << "fc1.weight" << std::endl;
+	print_matrix(fc1w_addr, layer_two, layer_one);
 	std::cout << std::endl;
-	std::cout << "Matrix bias:" << std::endl;
-	print_matrix(bias_addr, left_height, right_width);
+	std::cout << "fc1.bias" << std::endl;
+	print_matrix(fc1b_addr, layer_two, batch_size);
 	std::cout << std::endl;
-
-	load_matrix("E:/chip_simulator/matrices_transformer/matrix_LM.txt", lmost_input_addr, lmost_height, left_height);
-	load_matrix("E:/chip_simulator/matrices_transformer/matrix_LMC.txt", lmost_bias_addr, lmost_height, right_width);
-
-	std::cout << "Matrix weight lm:" << std::endl;
-	print_matrix(lmost_input_addr, lmost_height, left_height);
+	std::cout << "fc2.weight" << std::endl;
+	print_matrix(fc2w_addr, output_padded, layer_two);
 	std::cout << std::endl;
-	std::cout << "Matrix lmc:" << std::endl;
-	print_matrix(lmost_bias_addr, lmost_height, right_width);
+	std::cout << "fc2.bias" << std::endl;
+	print_matrix(fc2b_addr, output_padded, batch_size);
 	std::cout << std::endl;
 }
 
@@ -351,7 +289,7 @@ void core_tb::after_stop()
 	/*std::cout << "Matrix MID_OUTPUT:" << std::endl;
 	read_and_print_output_matrix(mid_output_addr, left_height, right_width);*/
 	std::cout << "Matrix OUTPUT:" << std::endl;
-	read_and_print_output_matrix(output_addr, lmost_height, right_width);
+	read_and_print_output_matrix(fc2b_addr, output_padded, batch_size);
 }
 
 /// @brief test core (simulation)
