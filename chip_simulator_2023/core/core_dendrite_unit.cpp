@@ -58,6 +58,37 @@ void core::DendriteUnit::dendritePrimExecution()
                     for (auto j = 0; j < padded_rw; j += 8) {
                         // 初始化 c_chunk
                         BFloat16 c_chunk[8][8] = { BFloat16(0) };
+
+                        ///////////////////////////////////////
+                        // 读取C矩阵块（偏置），并进行补零，与k无关
+                        // makua, chao
+                        sc_bv<128> data; // 8个BFloat16
+                        for (auto d = 0; d < 8; d++) {
+                            uint64_t row = i + d;
+                            if (row < lh) {
+                                uint64_t addr = baddr + row * padded_rw / 8 + j / 8;
+                                core_mem_port->read(addr, data);
+                                for (auto e = 0; e < 8; e++) {
+                                    uint64_t col = j + e;
+                                    if (col < rw) {
+                                        sc_bv<16> element_data = data.range(16 * (e + 1) - 1, 16 * e);
+                                        c_chunk[d][e] = BFloat16(element_data);
+                                    }
+                                    else {
+                                        c_chunk[d][e] = BFloat16(0);
+                                    }
+                                }
+                            }
+                            else {
+                                // 超出矩阵范围，整行补零
+                                for (auto e = 0; e < 8; e++) {
+                                    c_chunk[d][e] = BFloat16(0);
+                                }
+                            }
+                        }
+                        //////////////////////////////////////////
+
+
                         // 遍历中间维度
                         for (auto k = 0; k < padded_lw; k += 8) {
                             // 定义块矩阵
@@ -114,30 +145,6 @@ void core::DendriteUnit::dendritePrimExecution()
                                 }
                             }
 
-                            // 读取C矩阵块（偏置），并进行补零，与k无关
-                            for (auto d = 0; d < 8; d++) {
-                                uint64_t row = i + d;
-                                if (row < lh) {
-                                    uint64_t addr = baddr + row * padded_rw/8 + j/8;
-                                    core_mem_port->read(addr, data);
-                                    for (auto e = 0; e < 8; e++) {
-                                        uint64_t col = j + e;
-                                        if (col < rw) {
-                                            sc_bv<16> element_data = data.range(16 * (e + 1) - 1, 16 * e);
-                                            c_chunk[d][e] = BFloat16(element_data);
-                                        }
-                                        else {
-                                            c_chunk[d][e] = BFloat16(0);
-                                        }
-                                    }
-                                }
-                                else {
-                                    // 超出矩阵范围，整行补零
-                                    for (auto e = 0; e < 8; e++) {
-                                        c_chunk[d][e] = BFloat16(0);
-                                    }
-                                }
-                            }
 
                             // 进行块矩阵乘法
                             for (auto d = 0; d < 8; d++) {
