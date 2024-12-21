@@ -12,13 +12,20 @@
 #else
 #endif
 
+#if defined(__WIN32__) || defined(_WIN32) || defined(WIN32) || defined(__WINDOWS__) || defined(__TOS_WIN__)
+#define popen _popen
+#define pclose _pclose
+#else
+#include <cstdio>
+#endif
+
 /// @brief Execute a command line and return the output
 /// @param cmdLine Command line to be executed
 /// @return (std::string) Command output
 std::string cmdPopen(const std::string& cmdLine) {
 	char buffer[1024] = { '\0' };
 	FILE* pf = NULL;
-	pf = _popen(cmdLine.c_str(), "r");
+	pf = popen(cmdLine.c_str(), "r");
 	if (NULL == pf) {
 		printf("open pipe failed\n");
 		return std::string("");
@@ -27,7 +34,7 @@ std::string cmdPopen(const std::string& cmdLine) {
 	while (fgets(buffer, sizeof(buffer), pf)) {
 		ret += buffer;
 	}
-	_pclose(pf);
+	pclose(pf);
 	return ret;
 }
 

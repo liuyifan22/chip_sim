@@ -368,3 +368,6 @@ FodyWeavers.xsd
 # notebook
 notebooks/__pycache__
 notebooks/mnist_train
+
+# lib
+chip_simulator_2023/lib
