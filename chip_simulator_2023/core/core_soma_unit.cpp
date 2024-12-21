@@ -83,7 +83,7 @@ void core::SomaUnit::somaPrimExecution()
 				for (auto i = 0; i < batch_size; i++) {
 					std::vector<BFloat16> column(single_length);
 					for (auto j = 0; j < single_length; j++) {
-						column[j] = softmax_array[j][i];
+						column[j] = softmax_array[j][i] / 4.0; // channel-wise scaling
 					}
 					// do softmax operation
 					BFloat16 sum = BFloat16(0);

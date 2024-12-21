@@ -1,5 +1,3 @@
 # chip_simulator
 
-本项目为《测控技术与仪器设计与应用探索课》类脑计算方向的课程实验。本项目是基于SystemC的类脑计算芯片功能核的简单行为级仿真器。
-
-`master`分支中是本次项目的主要框架，`tutorial`分支中是SystemC示例代码和学习资料。**请务必阅读两个分支中的`doc`文件夹**。
+本项目使用 SystemC 实现了一个简单的 Transformer 架构。通过编写矩阵乘法和 Softmax 等指令，可以在 128 位机器上模拟 Transformer (Attn+FFN)的运行过程。

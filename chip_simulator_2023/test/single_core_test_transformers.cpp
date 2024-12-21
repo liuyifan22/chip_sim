@@ -59,20 +59,26 @@ public:
 	string test_name_;
 };
 
-uint64_t left_input_addr = 0x10;
-uint64_t lmost_input_addr = 0x0501;
-uint64_t right_input_addr = 0x1001;
-uint64_t lmost_bias_addr = 0x1401;
-uint64_t soft_output_addr = 0x1A01;
-uint64_t bias_addr = 0x2001;
-uint64_t mid_output_addr = 0x2501;
-uint64_t output_addr = 0x3001;
+uint64_t Q_addr = 0x0010; //16*16
+uint64_t K_addr = 0x0201; //8*16
+uint64_t V_addr = 0x0401; //16*8
+uint64_t Wq_addr = 0x0601; //16*16
+uint64_t Wk_addr = 0x0801; //16*16
+uint64_t Wv_addr = 0x0A01; //16*16
+uint64_t Wq_bias_addr = 0x0C01; //16*16
+uint64_t Wk_bias_addr = 0x0E01; //8*16
+uint64_t Wv_bias_addr = 0x1201; //16*8
+uint64_t qin_addr = 0x1401; //16*16
+uint64_t kin_addr = 0x1601; //8*16
+uint64_t vin_addr = 0x2201; //16*8
+uint64_t attn_addr = 0x1A01; //8*8
+uint64_t soft_attn_addr = 0x1B01; //8*8
+uint64_t output_addr = 0x1C01; //8*8
+uint64_t zero_addr = 0x1F01; //16*16
 
-uint64_t lmost_height = 16;
-uint64_t left_height=8;
-uint64_t left_width= 16;
-uint64_t right_width =16;
-
+uint64_t lq = 16;
+uint64_t lk = 8;
+uint64_t channel= 16;
 
 
 //void core_tb::load_matrix(const std::string& file_path, uint64_t base_addr) {
@@ -285,24 +291,24 @@ void core_tb::read_and_print_output_matrix(uint64_t base_addr, uint64_t height, 
 void core_tb::data_gen()
 {
 	// prepare prims
-	assert(left_input_addr + left_height*left_width < right_input_addr);
-	assert(right_input_addr + left_width*right_width < bias_addr);
-	assert(bias_addr + left_height * right_width < output_addr);
 	using namespace prims;
-	
-	uint64_t padded_left_height = ((left_height + 7) / 8) * 8;
-	uint64_t padded_left_width = ((left_width + 7) / 8) * 8;
-	uint64_t padded_right_width = ((right_width + 7) / 8) * 8;
-	uint64_t padded_lmost_height = ((lmost_height + 7) / 8) * 8;
-
 	instructions.push_back(convertPrim2Code(
-		PrimMM(left_input_addr,padded_left_height,padded_left_width,right_input_addr,padded_right_width,bias_addr,mid_output_addr)
+		PrimMM(Wq_addr, channel, channel, Q_addr, lq, Wq_bias_addr, qin_addr)
 	));
 	instructions.push_back(convertPrim2Code(
-		PrimSoftmax(mid_output_addr, left_height, right_width, soft_output_addr)
+		PrimMM(K_addr, lk, channel, Wk_addr, channel, Wk_bias_addr, kin_addr)
 	));
 	instructions.push_back(convertPrim2Code(
-		PrimMM(lmost_input_addr, padded_lmost_height, padded_left_height, soft_output_addr, padded_right_width, lmost_bias_addr, output_addr)
+		PrimMM(Wv_addr, channel, channel, V_addr, lk, Wv_bias_addr, vin_addr)
+	));
+	instructions.push_back(convertPrim2Code(
+		PrimMM(kin_addr, lk, channel, qin_addr, lq, zero_addr, attn_addr)
+	));
+	instructions.push_back(convertPrim2Code(
+		PrimSoftmax(attn_addr, lk, lq, soft_attn_addr)
+	));
+	instructions.push_back(convertPrim2Code(
+		PrimMM(vin_addr, channel, lk, soft_attn_addr, lq, zero_addr, output_addr)
 	));
 
 	// prepare data
@@ -311,29 +317,36 @@ void core_tb::data_gen()
 
 	cout << "--------------------- original data ---------------------" << endl;
 	// Load matrix A from file and push to data_list
-	load_matrix("E:/chip_simulator/matrices_transformer/matrix_A.txt", left_input_addr, left_height, left_width);
-	load_matrix("E:/chip_simulator/matrices_transformer/matrix_B.txt", right_input_addr, left_width, right_width);
-	load_matrix("E:/chip_simulator/matrices_transformer/matrix_C.txt", bias_addr, left_height, right_width);
+	load_matrix("E:/chip_simulator/matrices_transformer/matrix_Q.txt", Q_addr, channel, lq);
+	load_matrix("E:/chip_simulator/matrices_transformer/matrix_K.txt", K_addr, lk, channel);
+	load_matrix("E:/chip_simulator/matrices_transformer/matrix_V.txt", V_addr, channel, lk);
 
-	std::cout << "Matrix weight 1:" << std::endl;
-	print_matrix(left_input_addr, left_height, left_width);
-	std::cout << std::endl;
-	std::cout << "Matrix input:" << std::endl;
-	print_matrix(right_input_addr, left_width, right_width);
-	std::cout << std::endl;
-	std::cout << "Matrix bias:" << std::endl;
-	print_matrix(bias_addr, left_height, right_width);
-	std::cout << std::endl;
+	load_matrix("E:/chip_simulator/matrices_transformer/matrix_Wq.txt", Wq_addr, channel, channel);
+	load_matrix("E:/chip_simulator/matrices_transformer/matrix_Wk.txt", Wk_addr, channel, channel);
+	load_matrix("E:/chip_simulator/matrices_transformer/matrix_Wv.txt", Wv_addr, channel, channel);
 
-	load_matrix("E:/chip_simulator/matrices_transformer/matrix_LM.txt", lmost_input_addr, lmost_height, left_height);
-	load_matrix("E:/chip_simulator/matrices_transformer/matrix_LMC.txt", lmost_bias_addr, lmost_height, right_width);
+	load_matrix("E:/chip_simulator/matrices_transformer/matrix_biasq.txt", Wq_bias_addr, channel, lq);
+	load_matrix("E:/chip_simulator/matrices_transformer/matrix_biask.txt", Wk_bias_addr, lk, channel);
+	load_matrix("E:/chip_simulator/matrices_transformer/matrix_biasv.txt", Wv_bias_addr, channel, lk);
 
-	std::cout << "Matrix weight lm:" << std::endl;
-	print_matrix(lmost_input_addr, lmost_height, left_height);
-	std::cout << std::endl;
-	std::cout << "Matrix lmc:" << std::endl;
-	print_matrix(lmost_bias_addr, lmost_height, right_width);
-	std::cout << std::endl;
+	load_matrix("E:/chip_simulator/matrices_transformer/matrix_zeros.txt", zero_addr, channel, channel);
+
+	//std::cout << "Matrix weight 1:" << std::endl;
+	//print_matrix(left_input_addr, left_height, left_width);
+	//std::cout << std::endl;
+	//std::cout << "Matrix input:" << std::endl;
+	//print_matrix(right_input_addr, left_width, right_width);
+	//std::cout << std::endl;
+	//std::cout << "Matrix bias:" << std::endl;
+	//print_matrix(bias_addr, left_height, right_width);
+	//std::cout << std::endl;
+
+	//std::cout << "Matrix weight lm:" << std::endl;
+	//print_matrix(lmost_input_addr, lmost_height, left_height);
+	//std::cout << std::endl;
+	//std::cout << "Matrix lmc:" << std::endl;
+	//print_matrix(lmost_bias_addr, lmost_height, right_width);
+	//std::cout << std::endl;
 }
 
 /// @brief do something before start signal
@@ -351,8 +364,9 @@ void core_tb::after_stop()
 	cout << "--------------------- output data ---------------------" << endl;
 	/*std::cout << "Matrix MID_OUTPUT:" << std::endl;
 	read_and_print_output_matrix(mid_output_addr, left_height, right_width);*/
-	std::cout << "Matrix OUTPUT:" << std::endl;
-	read_and_print_output_matrix(output_addr, lmost_height, right_width);
+
+	std::cout << std::endl << "Matrix OUTPUT:" << std::endl;
+	read_and_print_output_matrix(output_addr, channel, lq);
 }
 
 /// @brief test core (simulation)
