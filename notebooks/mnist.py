@@ -33,7 +33,7 @@ def _(datasets, torch, transforms):
     transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.5,), (0.5,))])
     trainset = datasets.MNIST('mnist_train', train=True, download=True, transform=transform)
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=64, shuffle=True)
-    testset = datasets.MNIST('mnist_train', download=True, transform=transform)
+    testset = datasets.MNIST('mnist_train', train=False, download=True, transform=transform)
     testloader = torch.utils.data.DataLoader(testset)
     return testloader, testset, trainloader, trainset, transform
 
@@ -53,7 +53,7 @@ def _(nn):
             self.fc1 = nn.Linear(input_size, hidden_size) 
             self.relu = nn.ReLU()
             self.fc2 = nn.Linear(hidden_size, num_classes)  
-        
+
         def forward(self, x):
             out = self.fc1(x)
             out = self.relu(out)
@@ -81,7 +81,7 @@ def _(torch):
     def rightness(predictions, labels):
         pred = torch.max(predictions.data, 1)[1] 
         rights = pred.eq(labels.data.view_as(pred)).sum() 
-        return rights, len(labels) 
+        return rights, len(labels)
     return (rightness,)
 
 
@@ -148,6 +148,33 @@ def _(net, np):
 @app.cell
 def _(save):
     save()
+    return
+
+
+@app.cell
+def _(plt, testset):
+    for i in range(10, 26):
+        plt.imshow(testset.data[i].numpy(), cmap='gray')
+        plt.title(f"{testset.targets[i]}")
+        plt.show()
+    return (i,)
+
+
+@app.cell
+def _(np, testset):
+    def save_data():
+        delta = 10
+        num = 16
+        for i in range(delta, delta+num):
+            np.savetxt(f"data{i}.txt", testset.data[i].numpy())
+        labels = np.array([testset.targets[i] for i in range(delta, delta+num)])
+        np.savetxt(f"labels.txt", labels, fmt="%.0f")
+    return (save_data,)
+
+
+@app.cell
+def _(save_data):
+    save_data()
     return
 
 
