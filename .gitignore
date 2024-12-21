@@ -364,3 +364,7 @@ MigrationBackup/
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
 .vs/chip_simulator_2023/v17/Browse.VC.db
+
+# notebook
+notebooks/__pycache__
+notebooks/mnist_train
