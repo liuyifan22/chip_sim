@@ -1,6 +1,6 @@
 import numpy as np
 import os
-
+from scipy.special import softmax
 
 def generate_and_save_matrices(m, r, n, lm_h,directory):
     # Generate random matrices
@@ -30,12 +30,16 @@ def read_matrices(directory):
 
 if __name__ == "__main__":
     # Example dimensions
-    m, r, n = 15, 12, 14
-    lm_h = 17
-    directory = "E:/chip_simulator/matrices_continue"
+    # lora_transformer
+    m, r, batch = 8, 16,16
+    lm_h = 16
+    directory = "E:/chip_simulator/matrices_transformer"
     os.makedirs(directory, exist_ok=True)
 
-    # generate_and_save_matrices(m, r, n, lm_h,directory)
+    generate_and_save_matrices(m, r, batch, lm_h,directory)
     A, B, C,LM,LMC = read_matrices(directory)
-    np.savetxt(f"{directory}/output_mid.txt", (A @ B) + C, fmt="%.10f")
-    np.savetxt(f"{directory}/output.txt", (LM @((A @ B )+ C))+LMC, fmt="%.10f")
+
+    first_out= ((A @ B )+ C) #(length, batch)
+    first_out = softmax(first_out, axis=0)
+    
+    np.savetxt(f"{directory}/output.txt", (LM @first_out)+LMC, fmt="%.10f")

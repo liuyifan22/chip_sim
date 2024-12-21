@@ -11,7 +11,7 @@ def save_matrix(matrix, file_path):
 
 
 def main():
-    base_path = "E:/chip_simulator/matrices_medium"
+    base_path = "E:/chip_simulator/matrices_transformer"
     file1 = os.path.join(base_path, "sim_matrix_output.txt")
     file2 = os.path.join(base_path, "output.txt")
     output_file = os.path.join(base_path, "difference.txt")

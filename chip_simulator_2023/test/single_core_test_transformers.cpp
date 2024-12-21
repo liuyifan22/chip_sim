@@ -10,6 +10,7 @@
 #include "../prims/prim_jump.h"
 #include "../prims/prim_relu.h"
 #include "../prims/prim_mm.h"
+#include "../prims/prim_softmax.h"
 
 #include "../trace_engine/Event_engine.h"
 #include "../utils/file_compare.h"
@@ -58,20 +59,21 @@ public:
 	string test_name_;
 };
 
-
+uint64_t left_input_addr = 0x10;
 uint64_t lmost_input_addr = 0x0501;
-uint64_t lmost_height = 17;
-
-uint64_t lmost_bias_addr = 0x1501;
+uint64_t right_input_addr = 0x1001;
+uint64_t lmost_bias_addr = 0x1401;
+uint64_t soft_output_addr = 0x1A01;
+uint64_t bias_addr = 0x2001;
 uint64_t mid_output_addr = 0x2501;
+uint64_t output_addr = 0x3001;
 
-uint64_t left_input_addr=0x10;
-uint64_t left_height=15;
-uint64_t left_width= 12;
-uint64_t right_width =14;
-uint64_t right_input_addr=0x1001;
-uint64_t bias_addr=0x2001;
-uint64_t output_addr=0x3301;
+uint64_t lmost_height = 16;
+uint64_t left_height=8;
+uint64_t left_width= 16;
+uint64_t right_width =16;
+
+
 
 //void core_tb::load_matrix(const std::string& file_path, uint64_t base_addr) {
 //	std::ifstream file(file_path);
@@ -257,7 +259,7 @@ void core_tb::read_and_print_output_matrix(uint64_t base_addr, uint64_t height, 
 	}
 	std::string output_file;
 	{
-		output_file = "E:/chip_simulator/matrices_continue/sim_matrix_output.txt";
+		output_file = "E:/chip_simulator/matrices_transformer/sim_matrix_output.txt";
 	}
 	std::ofstream ofs(output_file);
 	if (!ofs.is_open()) {
@@ -297,7 +299,10 @@ void core_tb::data_gen()
 		PrimMM(left_input_addr,padded_left_height,padded_left_width,right_input_addr,padded_right_width,bias_addr,mid_output_addr)
 	));
 	instructions.push_back(convertPrim2Code(
-		PrimMM(lmost_input_addr, padded_lmost_height, padded_left_height, mid_output_addr, padded_right_width, lmost_bias_addr, output_addr)
+		PrimSoftmax(mid_output_addr, left_height, right_width, soft_output_addr)
+	));
+	instructions.push_back(convertPrim2Code(
+		PrimMM(lmost_input_addr, padded_lmost_height, padded_left_height, soft_output_addr, padded_right_width, lmost_bias_addr, output_addr)
 	));
 
 	// prepare data
@@ -306,9 +311,9 @@ void core_tb::data_gen()
 
 	cout << "--------------------- original data ---------------------" << endl;
 	// Load matrix A from file and push to data_list
-	load_matrix("E:/chip_simulator/matrices_continue/matrix_A.txt", left_input_addr, left_height, left_width);
-	load_matrix("E:/chip_simulator/matrices_continue/matrix_B.txt", right_input_addr, left_width, right_width);
-	load_matrix("E:/chip_simulator/matrices_continue/matrix_C.txt", bias_addr, left_height, right_width);
+	load_matrix("E:/chip_simulator/matrices_transformer/matrix_A.txt", left_input_addr, left_height, left_width);
+	load_matrix("E:/chip_simulator/matrices_transformer/matrix_B.txt", right_input_addr, left_width, right_width);
+	load_matrix("E:/chip_simulator/matrices_transformer/matrix_C.txt", bias_addr, left_height, right_width);
 
 	std::cout << "Matrix weight 1:" << std::endl;
 	print_matrix(left_input_addr, left_height, left_width);
@@ -320,8 +325,8 @@ void core_tb::data_gen()
 	print_matrix(bias_addr, left_height, right_width);
 	std::cout << std::endl;
 
-	load_matrix("E:/chip_simulator/matrices_continue/matrix_LM.txt", lmost_input_addr, lmost_height, left_height);
-	load_matrix("E:/chip_simulator/matrices_continue/matrix_LMC.txt", lmost_bias_addr, lmost_height, right_width);
+	load_matrix("E:/chip_simulator/matrices_transformer/matrix_LM.txt", lmost_input_addr, lmost_height, left_height);
+	load_matrix("E:/chip_simulator/matrices_transformer/matrix_LMC.txt", lmost_bias_addr, lmost_height, right_width);
 
 	std::cout << "Matrix weight lm:" << std::endl;
 	print_matrix(lmost_input_addr, lmost_height, left_height);
@@ -344,8 +349,8 @@ void core_tb::after_stop()
 	sc_bv<MEM_PORT_WIDTH> temp;
 
 	cout << "--------------------- output data ---------------------" << endl;
-	std::cout << "Matrix MID_OUTPUT:" << std::endl;
-	read_and_print_output_matrix(mid_output_addr, left_height, right_width);
+	/*std::cout << "Matrix MID_OUTPUT:" << std::endl;
+	read_and_print_output_matrix(mid_output_addr, left_height, right_width);*/
 	std::cout << "Matrix OUTPUT:" << std::endl;
 	read_and_print_output_matrix(output_addr, lmost_height, right_width);
 }

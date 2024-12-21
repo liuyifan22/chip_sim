@@ -141,6 +141,17 @@ void core::ControlUnit::run()
 				wait(soma_busy.negedge_event());
 				break;
 			}
+			case 0x8: // soma
+			{
+				move_prim_start.write(false);
+				router_prim_start.write(false);
+				dendrite_prim_start.write(false);
+				soma_prim_start.write(true);
+
+				prim_to_soma.write(prim_code.read());
+				wait(soma_busy.negedge_event());
+				break;
+			}
 
 			case 0x2:
 			case 0x3: // move
