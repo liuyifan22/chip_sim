@@ -10,7 +10,6 @@
 #include "../prims/prim_jump.h"
 #include "../prims/prim_relu.h"
 #include "../prims/prim_mm.h"
-#include "../prims/prim_softmax.h"
 
 #include "../trace_engine/Event_engine.h"
 #include "../utils/file_compare.h"
@@ -120,7 +119,7 @@ void core_tb::load_matrix(const std::string& file_path, uint64_t base_addr, uint
 	std::vector<sc_bv<MEM_PORT_WIDTH>> matrix_data;
 	std::vector<std::vector<BFloat16>> matrix;
 
-	// ¶ÁÈ¡ÎÄ¼þ²¢½âÎöÎª¾ØÕó
+	// ï¿½ï¿½È¡ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½
 	while (std::getline(file, line)) {
 		std::istringstream iss(line);
 		std::vector<BFloat16> row;
@@ -133,11 +132,11 @@ void core_tb::load_matrix(const std::string& file_path, uint64_t base_addr, uint
 
 	file.close();
 
-	// ¼ÆËã²¹ÁãºóµÄ¾ØÕó³ß´ç
+	// ï¿½ï¿½ï¿½ã²¹ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½ß´ï¿½
 	uint64_t padded_height = ((height + 7) / 8) * 8;
 	uint64_t padded_width = ((width + 7) / 8) * 8;
 
-	// ²¹Áã²¢×ª»»Îª sc_bv<MEM_PORT_WIDTH> ¸ñÊ½
+	// ï¿½ï¿½ï¿½ã²¢×ªï¿½ï¿½Îª sc_bv<MEM_PORT_WIDTH> ï¿½ï¿½Ê½
 	for (uint64_t i = 0; i < padded_height; ++i) {
 		for (uint64_t j = 0; j < padded_width; j += 8) {
 			sc_bv<MEM_PORT_WIDTH> temp;
@@ -153,7 +152,7 @@ void core_tb::load_matrix(const std::string& file_path, uint64_t base_addr, uint
 		}
 	}
 
-	// ½«¾ØÕóÊý¾ÝÍÆËÍµ½ data_list
+	// ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Íµï¿½ data_list
 	data_list[base_addr] = matrix_data;
 	std::cout << "Matrix loaded at address: " << base_addr << std::endl;
 }
@@ -220,7 +219,7 @@ void core_tb::read_and_print_output_matrix(uint64_t base_addr, uint64_t height, 
 	std::vector<sc_bv<MEM_PORT_WIDTH>> matrix_data;
 	sc_bv<MEM_PORT_WIDTH> temp;
 
-	// ¶ÁÈ¡Êä³ö¾ØÕóÊý¾Ý
+	// ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	/*for (uint64_t i = 0; i < height; ++i) {
 		for (uint64_t j = 0; j < width; j += MEM_PORT_WIDTH / 16) {
 			this->test_core->core_memory->read(base_addr + (i * width + j) * 2, temp);
@@ -228,7 +227,7 @@ void core_tb::read_and_print_output_matrix(uint64_t base_addr, uint64_t height, 
 		}
 	}*/
 
-	// ´òÓ¡Êä³ö¾ØÕó
+	// ï¿½ï¿½Ó¡ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	/*for (uint64_t i = 0; i < height; ++i) {
 		for (uint64_t j = 0; j < width; ++j) {
 			uint64_t index = i * width + j;
@@ -299,7 +298,7 @@ void core_tb::data_gen()
 		PrimMM(left_input_addr,padded_left_height,padded_left_width,right_input_addr,padded_right_width,bias_addr,mid_output_addr)
 	));
 	instructions.push_back(convertPrim2Code(
-		PrimSoftmax(mid_output_addr, left_height, right_width, soft_output_addr)
+		PrimRelu(mid_output_addr, left_height, right_width, soft_output_addr)
 	));
 	instructions.push_back(convertPrim2Code(
 		PrimMM(lmost_input_addr, padded_lmost_height, padded_left_height, soft_output_addr, padded_right_width, lmost_bias_addr, output_addr)

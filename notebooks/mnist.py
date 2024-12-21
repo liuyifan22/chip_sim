@@ -64,7 +64,7 @@ def _(nn):
 
 @app.cell
 def _(Net):
-    net = Net(784, 128, 10)
+    net = Net(784, 64, 10)
     net
     return (net,)
 
@@ -181,6 +181,25 @@ def _(np, testset):
 def _(save_data):
     save_data()
     return
+
+
+@app.cell
+def _():
+    16**4
+    return
+
+
+@app.cell
+def _(size):
+    size(64)
+    return
+
+
+@app.cell
+def _():
+    def size(t):
+        return 16*784+784*t+16*t+t*16+16*16
+    return (size,)
 
 
 if __name__ == "__main__":
