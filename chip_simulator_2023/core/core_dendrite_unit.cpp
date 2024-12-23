@@ -47,22 +47,22 @@ void core::DendriteUnit::dendritePrimExecution()
                 auto baddr = prim_mm.bias_addr_;
                 auto oaddr = prim_mm.output_addr_;
 
-                // ¼ÆËã²¹ÁãºóµÄ¾ØÕó³ß´ç£¬È·±£ÊÇ8µÄ±¶Êý
+                // ï¿½ï¿½ï¿½ã²¹ï¿½ï¿½ï¿½Ä¾ï¿½ï¿½ï¿½ß´ç£¬È·ï¿½ï¿½ï¿½ï¿½8ï¿½Ä±ï¿½ï¿½ï¿½
                 auto padded_lh = ((lh + 7) / 8) * 8;
                 auto padded_lw = ((lw + 7) / 8) * 8;
                 auto padded_rw = ((rw + 7) / 8) * 8;
 
-                // ±éÀúÊä³ö¾ØÕó¿é
-                // ±éÀúÊä³ö¾ØÕóµÄÐÐºÍÁÐ¿é
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ðºï¿½ï¿½Ð¿ï¿½
                 for (auto i = 0; i < padded_lh; i += 8) {
                     for (auto j = 0; j < padded_rw; j += 8) {
-                        // ³õÊ¼»¯ c_chunk
+                        // ï¿½ï¿½Ê¼ï¿½ï¿½ c_chunk
                         BFloat16 c_chunk[8][8] = { BFloat16(0) };
 
                         ///////////////////////////////////////
-                        // ¶ÁÈ¡C¾ØÕó¿é£¨Æ«ÖÃ£©£¬²¢½øÐÐ²¹Áã£¬ÓëkÎÞ¹Ø
+                        // ï¿½ï¿½È¡Cï¿½ï¿½ï¿½ï¿½é£¨Æ«ï¿½Ã£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð²ï¿½ï¿½ã£¬ï¿½ï¿½kï¿½Þ¹ï¿½
                         // makua, chao
-                        sc_bv<128> data; // 8¸öBFloat16
+                        sc_bv<128> data; // 8ï¿½ï¿½BFloat16
                         for (auto d = 0; d < 8; d++) {
                             uint64_t row = i + d;
                             if (row < lh) {
@@ -80,7 +80,7 @@ void core::DendriteUnit::dendritePrimExecution()
                                 }
                             }
                             else {
-                                // ³¬³ö¾ØÕó·¶Î§£¬ÕûÐÐ²¹Áã
+                                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Î§ï¿½ï¿½ï¿½ï¿½ï¿½Ð²ï¿½ï¿½ï¿½
                                 for (auto e = 0; e < 8; e++) {
                                     c_chunk[d][e] = BFloat16(0);
                                 }
@@ -89,20 +89,20 @@ void core::DendriteUnit::dendritePrimExecution()
                         //////////////////////////////////////////
 
 
-                        // ±éÀúÖÐ¼äÎ¬¶È
+                        // ï¿½ï¿½ï¿½ï¿½ï¿½Ð¼ï¿½Î¬ï¿½ï¿½
                         for (auto k = 0; k < padded_lw; k += 8) {
-                            // ¶¨Òå¿é¾ØÕó
+                            // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
                             BFloat16 a_chunk[8][8] = { BFloat16(0) };
                             BFloat16 b_chunk[8][8] = { BFloat16(0) };
-							sc_bv<128> data; // 8¸öBFloat16
+							sc_bv<128> data; // 8ï¿½ï¿½BFloat16
 
-                            // ¶ÁÈ¡ A ¾ØÕó¿é
-                            for (auto d = 0; d < 8; d++) { // Êú×ÅµÄ
+                            // ï¿½ï¿½È¡ A ï¿½ï¿½ï¿½ï¿½ï¿½
+                            for (auto d = 0; d < 8; d++) { // ï¿½ï¿½ï¿½Åµï¿½
                                 uint64_t row = i + d;
                                 if (row < lh) {
                                     uint64_t addr = laddr + row * padded_lw/8 + k/8;
                                     core_mem_port->read(addr, data);
-                                    // ½âÎö8¸öBF16
+                                    // ï¿½ï¿½ï¿½ï¿½8ï¿½ï¿½BF16
                                     for (auto e = 0; e < 8; e++) {
                                         uint64_t col = k + e;
                                         if (col < lw) {
@@ -121,7 +121,7 @@ void core::DendriteUnit::dendritePrimExecution()
                                 }
                             }
 
-                            // ¶ÁÈ¡ B ¾ØÕó¿é
+                            // ï¿½ï¿½È¡ B ï¿½ï¿½ï¿½ï¿½ï¿½
                             for (auto d = 0; d < 8; d++) {
                                 uint64_t row = k + d;
                                 if (row < lw) {
@@ -146,23 +146,27 @@ void core::DendriteUnit::dendritePrimExecution()
                             }
 
 
-                            // ½øÐÐ¿é¾ØÕó³Ë·¨
+                            // ï¿½ï¿½ï¿½Ð¿ï¿½ï¿½ï¿½ï¿½Ë·ï¿½
                             for (auto d = 0; d < 8; d++) {
                                 for (auto e = 0; e < 8; e++) {
                                     BFloat16 sum = BFloat16(0);
                                     for (auto f = 0; f < 8; f++) {
+                                        // printf("d: %d, e: %d, f: %d, a_chunk[d][f]: %f, b_chunk[f][e]: %f\n", d, e, f, float(a_chunk[d][f]), float(b_chunk[f][e]));
                                         sum = sum + a_chunk[d][f] * b_chunk[f][e];
-                                    }// ÐÂÉè¼Æ£ºÖ±½ÓÀÛ¼ÓÔÚcÉÏ£¬kÑ­»·µÄÇóºÍ²»±ØÏÔÊ½Ð´³ö
+                                    }// ï¿½ï¿½ï¿½ï¿½Æ£ï¿½Ö±ï¿½ï¿½ï¿½Û¼ï¿½ï¿½ï¿½cï¿½Ï£ï¿½kÑ­ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Í²ï¿½ï¿½ï¿½ï¿½ï¿½Ê½Ð´ï¿½ï¿½
+                                    // printf("d: %d, e: %d, c[d][e]: %f, sum: %f\n", d, e, float(c_chunk[d][e]), float(sum));
                                     c_chunk[d][e] = c_chunk[d][e] + sum;
+                                    assert(c_chunk[d][e] < 1e9 && c_chunk[d][e] > -1e9);
                                 }
                             }
                         }
 
-                        // ½«½á¹ûÐ´»ØÄÚ´æ
+                        // ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ï¿½ï¿½Ú´ï¿½
                         for (auto d = 0; d < 8; d++) {
                             uint64_t row = i + d;
                             if (row < lh) {
                                 sc_bv<128> write_data;
+                                bool too_large = false;
                                 for (auto e = 0; e < 8; e++) {
                                     write_data.range(16 * (e + 1) - 1, 16 * e) = to_bits(c_chunk[d][e]);
                                 }
@@ -175,7 +179,7 @@ void core::DendriteUnit::dendritePrimExecution()
             }
             else if (prim_temp.range(3, 0).to_uint() == 7) {
                 /************************* Conv *************************/
-                // ¾í»ý²Ù×÷µÄÊµÏÖ
+                // ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Êµï¿½ï¿½
             }
             else {
                 assert(0);

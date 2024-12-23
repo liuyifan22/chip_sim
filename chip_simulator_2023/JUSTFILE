@@ -1,0 +1,14 @@
+export WD := `pwd`
+export SYSTEMC_HOME := WD / "systemc-2.3.3"
+export LD_LIBRARY_PATH := SYSTEMC_HOME / "lib-linux64"
+
+build:
+  echo $SYSTEMC_HOME
+  g++ -I. -I$SYSTEMC_HOME/include -L. -L$LD_LIBRARY_PATH -lsystemc -lm -o ./test/mnist \
+    test/single_core_test_mnist.cpp \
+    core/*.cpp \
+    prims/*.cpp \
+    trace_engine/*.cpp \
+
+test: build
+  ./test/mnist

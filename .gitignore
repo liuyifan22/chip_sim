@@ -370,4 +370,6 @@ notebooks/__pycache__
 notebooks/mnist_train
 
 # lib
-chip_simulator_2023/lib
+systemc-2.3.3
+
+.vscode
