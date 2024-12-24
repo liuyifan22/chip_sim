@@ -1,0 +1,168 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="源文件\components">
+      <UniqueIdentifier>{7c2635dd-1639-477c-893b-084dd3bdda3e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\core">
+      <UniqueIdentifier>{18bd089e-534e-4dcf-9a99-1fc748e1c789}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\prims">
+      <UniqueIdentifier>{5ceca057-dd08-45c8-a9bf-43b29a2fdb21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\test">
+      <UniqueIdentifier>{2e41c870-ee4e-436b-b4f9-83ba17371e7d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\trace_engine">
+      <UniqueIdentifier>{138cafdc-6e96-4f45-8451-67250d14687f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="源文件\utils">
+      <UniqueIdentifier>{b2dbe6c0-7f17-4523-a579-3976c28c8ff6}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\core\core.cpp">
+      <Filter>源文件\core</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\core\core_control_unit.cpp">
+      <Filter>源文件\core</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\core\core_dendrite_unit.cpp">
+      <Filter>源文件\core</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\core\core_move_unit.cpp">
+      <Filter>源文件\core</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\core\core_soma_unit.cpp">
+      <Filter>源文件\core</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\prims\prim_jump.cpp">
+      <Filter>源文件\prims</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\prims\prim_load.cpp">
+      <Filter>源文件\prims</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\prims\prim_relu.cpp">
+      <Filter>源文件\prims</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\prims\prim_store.cpp">
+      <Filter>源文件\prims</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\prims\primitive.cpp">
+      <Filter>源文件\prims</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\trace_engine\Event_engine.cpp">
+      <Filter>源文件\trace_engine</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\trace_engine\Trace_event.cpp">
+      <Filter>源文件\trace_engine</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\prims\prim_mm.cpp">
+      <Filter>源文件\prims</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\prims\prim_softmax.cpp">
+      <Filter>源文件\prims</Filter>
+    </ClCompile>
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\test\single_core_test_transformers.cpp">
+      <Filter>源文件\test</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="hello.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\components\dram.h">
+      <Filter>源文件\components</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\components\functional_noc.h">
+      <Filter>源文件\components</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\components\mem_if.h">
+      <Filter>源文件\components</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\components\ram.h">
+      <Filter>源文件\components</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\components\receive_buffer.hpp">
+      <Filter>源文件\components</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\components\rom.h">
+      <Filter>源文件\components</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\components\router_event.hpp">
+      <Filter>源文件\components</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\core\core.h">
+      <Filter>源文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\core\core_control_unit.h">
+      <Filter>源文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\core\core_dendrite_unit.h">
+      <Filter>源文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\core\core_move_unit.h">
+      <Filter>源文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\core\core_router_unit.h">
+      <Filter>源文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\core\core_soma_unit.h">
+      <Filter>源文件\core</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\prims\prim_jump.h">
+      <Filter>源文件\prims</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\prims\prim_load.h">
+      <Filter>源文件\prims</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\prims\prim_relu.h">
+      <Filter>源文件\prims</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\prims\prim_store.h">
+      <Filter>源文件\prims</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\prims\primitive.h">
+      <Filter>源文件\prims</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\trace_engine\Event_engine.h">
+      <Filter>源文件\trace_engine</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\trace_engine\Trace_event.h">
+      <Filter>源文件\trace_engine</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\trace_engine\Trace_event_queue.h">
+      <Filter>源文件\trace_engine</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\utils\BFloat16.h">
+      <Filter>源文件\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\utils\file_compare.h">
+      <Filter>源文件\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\utils\precision_conversion.hpp">
+      <Filter>源文件\utils</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\config.h">
+      <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\prims\prim_mm.h">
+      <Filter>源文件\prims</Filter>
+    </ClInclude>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\prims\prim_softmax.h">
+      <Filter>源文件\prims</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

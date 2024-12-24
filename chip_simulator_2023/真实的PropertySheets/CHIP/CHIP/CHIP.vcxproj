@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -18,53 +18,11 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="components\dram.h" />
-    <ClInclude Include="components\functional_noc.h" />
-    <ClInclude Include="components\mem_if.h" />
-    <ClInclude Include="components\ram.h" />
-    <ClInclude Include="components\receive_buffer.hpp" />
-    <ClInclude Include="components\rom.h" />
-    <ClInclude Include="components\router_event.hpp" />
-    <ClInclude Include="config.h" />
-    <ClInclude Include="core\core.h" />
-    <ClInclude Include="core\core_control_unit.h" />
-    <ClInclude Include="core\core_dendrite_unit.h" />
-    <ClInclude Include="core\core_move_unit.h" />
-    <ClInclude Include="core\core_router_unit.h" />
-    <ClInclude Include="core\core_soma_unit.h" />
-    <ClInclude Include="prims\primitive.h" />
-    <ClInclude Include="prims\prim_jump.h" />
-    <ClInclude Include="prims\prim_load.h" />
-    <ClInclude Include="prims\prim_relu.h" />
-    <ClInclude Include="prims\prim_store.h" />
-    <ClInclude Include="trace_engine\Event_engine.h" />
-    <ClInclude Include="trace_engine\Trace_event.h" />
-    <ClInclude Include="trace_engine\Trace_event_queue.h" />
-    <ClInclude Include="utils\BFloat16.h" />
-    <ClInclude Include="utils\file_compare.h" />
-    <ClInclude Include="utils\precision_conversion.hpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="core\core.cpp" />
-    <ClCompile Include="core\core_control_unit.cpp" />
-    <ClCompile Include="core\core_dendrite_unit.cpp" />
-    <ClCompile Include="core\core_move_unit.cpp" />
-    <ClCompile Include="core\core_soma_unit.cpp" />
-    <ClCompile Include="prims\primitive.cpp" />
-    <ClCompile Include="prims\prim_jump.cpp" />
-    <ClCompile Include="prims\prim_load.cpp" />
-    <ClCompile Include="prims\prim_relu.cpp" />
-    <ClCompile Include="prims\prim_store.cpp" />
-    <ClCompile Include="test\single_core_test_relu.cpp" />
-    <ClCompile Include="trace_engine\Event_engine.cpp" />
-    <ClCompile Include="trace_engine\Trace_event.cpp" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
-    <VCProjectVersion>16.0</VCProjectVersion>
+    <VCProjectVersion>17.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{fd277ee3-9a9e-4051-ae06-46f59e211db5}</ProjectGuid>
-    <RootNamespace>chipsimulator2023</RootNamespace>
+    <ProjectGuid>{b66dba40-1eee-4451-9abf-f4a3e6970135}</ProjectGuid>
+    <RootNamespace>CHIP</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -101,19 +59,15 @@
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="PropertySheet.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="PropertySheet.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="PropertySheet.props" />
   </ImportGroup>
   <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
-    <Import Project="PropertySheet.props" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -150,10 +104,15 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>E:\chip_simulator\libs\systemc-2.3.3\src</AdditionalIncludeDirectories>
+      <RuntimeTypeInfo>true</RuntimeTypeInfo>
+      <AdditionalOptions>/vmg /D_CRT_SECURE_NO_DEPRECATE %(AdditionalOptions)</AdditionalOptions>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>E:\chip_simulator\libs\systemc-2.3.3\msvc10\SystemC\x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>"E:\chip_simulator\libs\systemc-2.3.3\msvc10\SystemC\x64\Debug\SystemC.lib";%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -172,6 +131,53 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\core\core.cpp" />
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\core\core_control_unit.cpp" />
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\core\core_dendrite_unit.cpp" />
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\core\core_move_unit.cpp" />
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\core\core_soma_unit.cpp" />
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\prims\primitive.cpp" />
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\prims\prim_jump.cpp" />
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\prims\prim_load.cpp" />
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\prims\prim_mm.cpp" />
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\prims\prim_relu.cpp" />
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\prims\prim_softmax.cpp" />
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\prims\prim_store.cpp" />
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\test\single_core_test_transformers.cpp" />
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\trace_engine\Event_engine.cpp" />
+    <ClCompile Include="E:\chip_simulator\chip_simulator_2023\trace_engine\Trace_event.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\components\dram.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\components\functional_noc.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\components\mem_if.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\components\ram.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\components\receive_buffer.hpp" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\components\rom.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\components\router_event.hpp" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\config.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\core\core.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\core\core_control_unit.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\core\core_dendrite_unit.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\core\core_move_unit.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\core\core_router_unit.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\core\core_soma_unit.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\prims\primitive.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\prims\prim_jump.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\prims\prim_load.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\prims\prim_mm.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\prims\prim_relu.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\prims\prim_softmax.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\prims\prim_store.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\trace_engine\Event_engine.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\trace_engine\Trace_event.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\trace_engine\Trace_event_queue.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\utils\BFloat16.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\utils\file_compare.h" />
+    <ClInclude Include="E:\chip_simulator\chip_simulator_2023\utils\precision_conversion.hpp" />
+    <ClInclude Include="hello.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
